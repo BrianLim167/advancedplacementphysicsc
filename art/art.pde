@@ -1,23 +1,23 @@
+import processing.video.*;
 PImage img;
 PImage img2;
+Capture cam;
 
 void setup() {
   size(1920, 1080);
-  img = loadImage("physicists.jpg");
-  img2 = loadImage("colors.jpg");
-  img2.resize(700,700);
-  imageMode(CENTER);
+  cam = new Capture(this, 1920, 1080);
+  cam.start();
+  
   noStroke();
   background(255);
-  frameRate(480);
+  frameRate(60);
 }
 
-void draw() { 
-  int i = 0;
-  while (i <= 25) {
-    drawPoint();
-    i = i +1;
+void draw() {
+  if (cam.available() == true) {
+    cam.read();
   }
+  image(cam, 0, 0); 
 }
 
 void drawPoint() {
@@ -29,7 +29,30 @@ void drawPoint() {
   int i = round( map (value, 0, 255, 0, 700*700-1) );
   //color c2 = img2.pixels[i];
   color c2 = color(red(pix) + random(50) - 25, green(pix) + random(50) - 25, blue(pix) + random(50) - 25);
+  fill(c2, 128);
+  rect(x, y, random(0,15), random(0,15));
+}
 
-  fill(c2);
-  rect(x, y, random(30), random(30));
+void keyReleased(){
+  if(key == ' '){
+    takePic();
+    //monetize();
+  }
+}
+
+void takePic(){
+  if (cam.available()) { 
+    cam.read(); 
+    image(cam, 0, 0);
+    saveFrame("img.png");
+    //img = loadImage("img.png");
+  }
+}
+
+void monetize(){
+  int i = 0;
+  while (i <= 100) {
+    drawPoint();
+    i = i +1;
+  }
 }
