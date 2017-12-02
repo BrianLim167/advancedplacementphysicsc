@@ -5,7 +5,6 @@ boolean takingPic;
 boolean titleScreen;
 int W, L;
 boolean def;
-//HScrollbar hs1, hs2;
 Capture cam;
 
 void setup() {
@@ -13,32 +12,28 @@ void setup() {
   //size(1920, 1080);
   cam = new Capture(this, 1920, 1080);
   cam.start();
-  takingPic = true;
+  takingPic = false;
   titleScreen = true;
   String str = Integer.toString((int)Math.random() * 20 +1);
   img2 = loadImage(str + ".png");
   W = 30;
   L = 30; 
   def = false;
-  //hs1 = new HScrollbar(width/2, height/2-20, 500, 30, 30);
-  //hs2 = new HScrollbar(0, height/2+20, 0, 200, 400);
   noStroke();
-  //stroke(0);
-  //background(255);
   frameRate(60);
 }
 
 void draw() {
-  //if(titleScreen){
-  //  titleScreen();
-  //}
+  if(titleScreen){
+    titleScreen();
+  }
   
   if (takingPic && cam.available()) {
     cam.read();
     image(cam, 0, 0, 2560, 1440);
   }
   
-  if(!takingPic){
+  if(!takingPic && !titleScreen){
     monetize();
   }
 }
@@ -51,7 +46,6 @@ void drawPoint() {
   float value = brightness (pix);
   int i = round( map (value, 0, 255, 0, img2.width*img2.height-1) );
   //int i = (int)(Math.random() * (img2.width*img2.height-1));
-  //color c2 = pix + i;
   color c2;
   if(def){
     c2 = pix;
@@ -59,7 +53,6 @@ void drawPoint() {
   else{
     c2 = img2.pixels[i];
   }
-  //color c2 = color(red(pix) + random(50) - 25, green(pix) + random(50) - 25, blue(pix) + random(50) - 25);
   fill(c2, 128);
   rect(x, y, random(5,W), random(5,L));
 }
@@ -108,6 +101,10 @@ void keyReleased(){
     background(255);
     takePic();
   }
+  if(key == ' '){
+    titleScreen = false;
+    takingPic = true;
+  }
 }
 
 void takePic(){
@@ -128,94 +125,14 @@ void monetize(){
 } 
 
 void titleScreen(){
-  if(cam.available()){
-    cam.read();
-    //image(cam, 0, 0);
-    //tint(255, 255);
-    image(cam, 0, 0);
-  }
+  background(0);
   textAlign(CENTER);
   textSize(100);
   fill(255,0,0);
   text("Monetize", width/2, height/2 - 200);
-  //hs1.update();
-  //hs2.update();
-  //hs1.display();
-  //hs2.display();
-}
-
-class HScrollbar {
-  int swidth, sheight;    // width and height of bar
-  float xpos, ypos;       // x and y position of bar
-  float spos, newspos;    // x position of slider
-  float sposMin, sposMax; // max and min values of slider
-  int loose;              // how loose/heavy
-  boolean over;           // is the mouse over the slider?
-  boolean locked;
-  float ratio;
-
-  HScrollbar (float xp, float yp, int sw, int sh, int l) {
-    swidth = sw;
-    sheight = sh;
-    int widthtoheight = sw - sh;
-    ratio = (float)sw / (float)widthtoheight;
-    xpos = xp;
-    ypos = yp-sheight/2;
-    spos = xpos + swidth/2 - sheight/2;
-    newspos = spos;
-    sposMin = xpos;
-    sposMax = xpos + swidth - sheight;
-    loose = l;
-  }
-
-  void update() {
-    if (overEvent()) {
-      over = true;
-    } else {
-      over = false;
-    }
-    if (mousePressed && over) {
-      locked = true;
-    }
-    if (!mousePressed) {
-      locked = false;
-    }
-    if (locked) {
-      newspos = constrain(mouseX-sheight/2, sposMin, sposMax);
-    }
-    if (abs(newspos - spos) > 1) {
-      spos = spos + (newspos-spos)/loose;
-    }
-  }
-
-  float constrain(float val, float minv, float maxv) {
-    return min(max(val, minv), maxv);
-  }
-
-  boolean overEvent() {
-    if (mouseX > xpos && mouseX < xpos+swidth &&
-       mouseY > ypos && mouseY < ypos+sheight) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  void display() {
-    noStroke();
-    fill(204);
-    rect(xpos, ypos, swidth, sheight);
-    if (over || locked) {
-      fill(0, 0, 0);
-    } else {
-      fill(102, 102, 102);
-    }
-    rect(spos, ypos, sheight, sheight);
-  }
-
-  float getPos() {
-    // Convert spos to be values between
-    // 0 and the total width of the scrollbar
-    return spos * ratio;
-  } 
+  text("Press W for watercolor", width/2, height/2 - 100);
+  text("Press S for stained glass", width/2, height/2);
+  text("Press D for default colors and random style", width/2, height/2 + 100);
+  text("Press up and down arrow keys to blur/focus", width/2, height/2 + 200);
+  text("Press space to continue", width/2, height/2 + 300);
 }
