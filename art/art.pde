@@ -1,12 +1,16 @@
 import processing.video.*;
 PImage img;
 PImage img2;
+boolean takingPic;
 Capture cam;
 
 void setup() {
+  //fullScreen();
   size(1920, 1080);
   cam = new Capture(this, 1920, 1080);
   cam.start();
+  takingPic = true;
+  img2 = loadImage("colors.jpg");
   
   noStroke();
   background(255);
@@ -14,10 +18,14 @@ void setup() {
 }
 
 void draw() {
-  if (cam.available() == true) {
+  if (takingPic && cam.available()) {
     cam.read();
+    image(cam, 0, 0);
   }
-  image(cam, 0, 0); 
+  
+  if(!takingPic){
+    monetize();
+  }
 }
 
 void drawPoint() {
@@ -26,33 +34,33 @@ void drawPoint() {
   color pix = img.get(x, y);
 
   float value = brightness (pix);
-  int i = round( map (value, 0, 255, 0, 700*700-1) );
+  //int i = round( map (value, 0, 255, 0, 700*700-1) );
+  int i = (int)(Math.random() * (img2.width*img2.height-1));
+  color c2 = pix + i;
   //color c2 = img2.pixels[i];
-  color c2 = color(red(pix) + random(50) - 25, green(pix) + random(50) - 25, blue(pix) + random(50) - 25);
+  //color c2 = color(red(pix) + random(50) - 25, green(pix) + random(50) - 25, blue(pix) + random(50) - 25);
   fill(c2, 128);
-  rect(x, y, random(0,15), random(0,15));
+  rect(x, y, random(5,30), random(5,30));
 }
 
 void keyReleased(){
   if(key == ' '){
     takePic();
-    //monetize();
+    background(255);
   }
 }
 
 void takePic(){
-  if (cam.available()) { 
-    cam.read(); 
-    image(cam, 0, 0);
-    saveFrame("img.png");
-    //img = loadImage("img.png");
-  }
+  println("saved");
+  saveFrame("img.png");
+  img = loadImage("img.png");
+  takingPic = false;
 }
 
 void monetize(){
   int i = 0;
-  while (i <= 100) {
+  while (i <= 200) {
     drawPoint();
     i = i +1;
   }
-}
+} 
