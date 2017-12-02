@@ -7,13 +7,14 @@ boolean titleScreen;
 Capture cam;
 
 void setup() {
-  //fullScreen();
-  size(1920, 1080);
+  fullScreen();
+  //size(1920, 1080);
   cam = new Capture(this, 1920, 1080);
   cam.start();
   takingPic = true;
   titleScreen = true;
-  img2 = loadImage("gradient.png");
+  String str = Integer.toString((int)Math.random() * 20 +1);
+  img2 = loadImage(str + ".png");
   
   //hs1 = new HScrollbar(width/2, height/2-20, 500, 30, 30);
   //hs2 = new HScrollbar(0, height/2+20, 0, 200, 400);
@@ -30,7 +31,7 @@ void draw() {
   
   if (takingPic && cam.available()) {
     cam.read();
-    image(cam, 0, 0);
+    image(cam, 0, 0, 2560, 1440);
   }
   
   if(!takingPic){
@@ -44,10 +45,10 @@ void drawPoint() {
   color pix = img.get(x, y);
 
   float value = brightness (pix);
-  //int i = round( map (value, 0, 255, 0, 700*700-1) );
-  int i = 0;//(int)(Math.random() * (img2.width*img2.height-1));
-  color c2 = pix + i;
-  //color c2 = img2.pixels[i];
+  int i = round( map (value, 0, 255, 0, img2.width*img2.height-1) );
+  //int i = (int)(Math.random() * (img2.width*img2.height-1));
+  //color c2 = pix + i;
+  color c2 = img2.pixels[i];
   //color c2 = color(red(pix) + random(50) - 25, green(pix) + random(50) - 25, blue(pix) + random(50) - 25);
   fill(c2, 128);
   rect(x, y, random(5,30), random(5,30));
@@ -55,8 +56,13 @@ void drawPoint() {
 
 void keyReleased(){
   if(key == ' '){
+    clear();
     takePic();
     background(255);
+    if(!takingPic){
+      String str = Integer.toString((int)Math.random() * 20 +1);
+      img2 = loadImage(str + ".png");
+    }
   }
 }
 
