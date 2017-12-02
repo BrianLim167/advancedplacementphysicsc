@@ -3,6 +3,8 @@ PImage img;
 PImage img2;
 boolean takingPic;
 boolean titleScreen;
+int W, L;
+boolean def;
 //HScrollbar hs1, hs2;
 Capture cam;
 
@@ -15,7 +17,9 @@ void setup() {
   titleScreen = true;
   String str = Integer.toString((int)Math.random() * 20 +1);
   img2 = loadImage(str + ".png");
-  
+  W = 30;
+  L = 30; 
+  def = false;
   //hs1 = new HScrollbar(width/2, height/2-20, 500, 30, 30);
   //hs2 = new HScrollbar(0, height/2+20, 0, 200, 400);
   noStroke();
@@ -48,25 +52,68 @@ void drawPoint() {
   int i = round( map (value, 0, 255, 0, img2.width*img2.height-1) );
   //int i = (int)(Math.random() * (img2.width*img2.height-1));
   //color c2 = pix + i;
-  color c2 = img2.pixels[i];
+  color c2;
+  if(def){
+    c2 = pix;
+  }
+  else{
+    c2 = img2.pixels[i];
+  }
   //color c2 = color(red(pix) + random(50) - 25, green(pix) + random(50) - 25, blue(pix) + random(50) - 25);
   fill(c2, 128);
-  rect(x, y, random(5,30), random(5,30));
+  rect(x, y, random(5,W), random(5,L));
 }
 
 void keyReleased(){
-  if(key == ' '){
+  if(key == CODED){
+    if(keyCode == UP){
+      W += 5;
+      L += 5;
+    }
+    if(keyCode == DOWN){
+      W -= 5;
+      L -= 5;
+    }
+  }
+  if(key == 'w'){
+    def = false;
     clear();
-    takePic();
     background(255);
+    takePic();
     if(!takingPic){
-      String str = Integer.toString((int)Math.random() * 20 +1);
+      String str = Integer.toString((int)(Math.random() * 20) +1);
       img2 = loadImage(str + ".png");
     }
+  }
+  if(key == 's'){
+    def = false;
+    clear();
+    stroke(0);
+    background(255);
+    takePic();
+    if(!takingPic){
+      String str = Integer.toString((int)(Math.random() * 20) +1);
+      img2 = loadImage(str + ".png");
+    }
+  }
+  if(key == 'd'){
+    if(Math.random() < 0.5){
+      stroke(0);
+    }
+    else{
+      noStroke();
+    }
+    def = true;
+    clear();
+    background(255);
+    takePic();
   }
 }
 
 void takePic(){
+  clear();
+  cam.read();
+  image(cam, 0, 0, 2560, 1440);
   saveFrame("img.png");
   img = loadImage("img.png");
   takingPic = false;
